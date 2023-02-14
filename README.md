@@ -35,3 +35,4 @@ Jest was used to write unit tests for the Lambda function. The first test checks
 * TypeScript
 * Jest
 * Serverless Framework
+* Webpack
