@@ -16,9 +16,9 @@ Note that the value of the 'phone' property must adhere to the E164 internationa
 5. Assuming that the payload was passed in a valid format, the 'text' attribute is sent to the phone number defined in the 'phone' attribute via SNS.
 
 ## Architecture
-Below is a diagram illustrating a conceptual overview of the architecture of this project.
+Below is a diagram illustrating a conceptual overview of the architecture of this system.
 <p align="center">
-  <img src="https://i.imgur.com/1Hs9Mtw.png" height="450px"></img>
+  <img src="https://i.imgur.com/1Hs9Mtw.png" height="440px"></img>
   <p>
 
 ## Deployment
