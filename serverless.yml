@@ -1,0 +1,20 @@
+org: tigeryant
+service: spService
+app: sp-app
+frameworkVersion: '3'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: eu-west-2
+  iam:
+    role: arn:aws:iam::322928185466:role/sendSMS1Role
+
+plugins:
+  - serverless-esbuild
+
+functions:
+  sendSMS:
+    handler: handler.sendSMS
+    events:
+      - sqs: arn:aws:sqs:eu-west-2:322928185466:ShieldpayQueue
