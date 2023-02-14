@@ -11,7 +11,7 @@ provider:
     role: arn:aws:iam::322928185466:role/sendSMS1Role
 
 plugins:
-  - serverless-esbuild
+  - serverless-webpack
 
 functions:
   sendSMS:
