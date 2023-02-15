@@ -9,6 +9,7 @@ interface Params {
 export async function sendSMS(event: SQSEvent) {
     const body = JSON.parse(event.Records[0].body)
     const payload = JSON.parse(body.Message)
+
     const params: Params = {
         Message: payload.text, 
         PhoneNumber: payload.phone
@@ -26,7 +27,7 @@ export async function sendSMS(event: SQSEvent) {
     const pushSucceeded = await sns.publish({
         // params
         // temporary hardcoded message and topic
-        Message: 'some cool message',
+        Message: params.Message,
         TargetArn: 'arn:aws:sns:eu-west-2:322928185466:sendSMS1'
     }).promise().then((data) => {
         console.log('SNS push succeeded: ', data)

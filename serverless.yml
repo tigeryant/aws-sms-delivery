@@ -8,13 +8,91 @@ provider:
   runtime: nodejs14.x
   region: eu-west-2
   iam:
-    role: arn:aws:iam::322928185466:role/sendSMS1Role
-
+    role: SendSMSLambdaFunctionRole
+  	
 plugins:
   - serverless-webpack
 
 functions:
-  sendSMS:
+  SendSMS:
     handler: handler.sendSMS
     events:
-      - sqs: arn:aws:sqs:eu-west-2:322928185466:ShieldpayQueue
+      - sqs:
+          arn: !GetAtt DataQueue.Arn
+
+resources:
+  Resources:
+    DataQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: DataQueue
+    
+    DataQueuePolicy:
+      Type: 'AWS::SQS::QueuePolicy'
+      Properties:
+        Queues:
+          - !Ref DataQueue
+        PolicyDocument:
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: sns.amazonaws.com
+              Action:
+                - sqs:SendMessage
+                - sqs:ReceiveMessage
+                - sqs:DeleteMessage
+              Resource: !GetAtt DataQueue.Arn
+    
+    IngestTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: IngestTopic
+        DisplayName: IngestTopic
+    
+    DataIngestSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: sqs
+        TopicArn: !Ref IngestTopic
+        Endpoint: !GetAtt DataQueue.Arn
+
+    SendSMSLambdaFunctionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: SendSMSLambdaFunctionRole
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+              Action: sts:AssumeRole
+        Policies:
+          - PolicyName: "ConsumeDataSQSPolicy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "sqs:ReceiveMessage"
+                    - "sqs:DeleteMessage"
+                    - "sqs:GetQueueAttributes"
+                  Resource: !GetAtt DataQueue.Arn
+          - PolicyName: "LambdaLogsPolicy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "logs:CreateLogGroup"
+                    - "logs:CreateLogStream"
+                    - "logs:PutLogEvents"
+                  Resource: "arn:aws:logs:*:*:*"
+          - PolicyName: "LambdaSNSPolicy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: "Allow"
+                  Action:
+                    - "sns:Publish"
+                  Resource: "arn:aws:sns:*:*:*"

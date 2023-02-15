@@ -22,7 +22,7 @@ Below is a diagram illustrating a conceptual overview of the architecture of thi
   <p>
 
 ## Deployment
-The Serverless Framework was used to deploy the AWS lambda function in this stack.
+The Serverless Framework was used to deploy the lambda function, the SQS queue, the SNS topic and all their associated roles and policies.
 
 ## Testing
 Jest was used to write unit tests for the Lambda function. The first test checks for an appropriate response when a valid SQS event object containing a valid payload is passed to the handler. The other tests check that the lambda fails gracefully in the case that the 'text' or 'phone' values are malformed. The tests are defined within the `./tests/unit` directory, and can be run by running `npm run test` from the root of the project directory.
