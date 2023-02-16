@@ -19,6 +19,7 @@ functions:
     events:
       - sqs:
           arn: !GetAtt DataQueue.Arn
+    maximumRetryAttempts: 0
 
 resources:
   Resources:
