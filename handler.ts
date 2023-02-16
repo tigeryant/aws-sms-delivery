@@ -7,44 +7,53 @@ interface Params {
 }
 
 export async function sendSMS(event: SQSEvent) {
-    const body = JSON.parse(event.Records[0].body)
-    const payload = JSON.parse(body.Message)
+    try {
+        const body = JSON.parse(event.Records[0].body)
+        const payload = JSON.parse(body.Message)
 
-    const params: Params = {
-        Message: payload.text, 
-        PhoneNumber: payload.phone
-    }
-
-    if (!validateParams(params)) {
-        return {
-            message: 'One or both of the input parameters were not valid',
-            input: event
-        } 
-    }
-    const sns = new AWS.SNS({region: 'eu-west-2'})
-
-    // push SMS message using phone number and text provided
-    const pushSucceeded = await sns.publish({
-        // params
-        // temporary hardcoded message and topic
-        Message: params.Message,
-        TargetArn: 'arn:aws:sns:eu-west-2:322928185466:sendSMS1'
-    }).promise().then((data) => {
-        console.log('SNS push succeeded: ', data)
-        return true
-    }).catch((err) => {
-        console.error('Error: ', err)
-        return false
-    })
-    
-    if (pushSucceeded) {
-        return {
-            message: 'SMS push was successful!',
-            input: event
+        const params: Params = {
+            Message: payload.text, 
+            PhoneNumber: payload.phone
         }
-    } else {
+
+        if (!validateParams(params)) {
+            return {
+                message: 'One or both of the input parameters were not valid',
+                input: event
+            } 
+        }
+        const sns = new AWS.SNS({region: 'eu-west-2'})
+
+        // push SMS message using phone number and text provided
+        const pushSucceeded = await sns.publish({
+            // params
+            // temporary hardcoded message and topic
+            Message: params.Message,
+            TargetArn: 'arn:aws:sns:eu-west-2:322928185466:sendSMS1'
+        }).promise().then((data) => {
+            console.log('SNS push succeeded: ', data)
+            return true
+        }).catch((err) => {
+            console.error('Error: ', err)
+            return false
+        })
+        
+        if (pushSucceeded) {
+            return {
+                message: 'SMS push was successful!',
+                input: event
+            }
+        } else {
+            return {
+                message: 'SMS push failed!',
+                input: event
+            }
+        }
+    } catch (error) {
+        console.log('error: ', error)
+        console.log('event: ', event)
         return {
-            message: 'SMS push failed!',
+            message: error,
             input: event
         }
     }
