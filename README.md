@@ -18,7 +18,7 @@ Note that the value of the 'phone' property must adhere to the E164 internationa
 ## Architecture
 Below is a diagram illustrating a conceptual overview of the architecture of this system.
 <p align="center">
-  <img src="https://i.imgur.com/1Hs9Mtw.png" height="440px"></img>
+  <img src="https://i.imgur.com/RKX8oIR.png" height="300px"></img>
   <p>
 
 ## Deployment
